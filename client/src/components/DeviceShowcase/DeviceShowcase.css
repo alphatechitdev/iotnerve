@@ -1,0 +1,30 @@
+.device-showcase {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px; /* Adjust based on space needed */
+    position: relative;
+  }
+  
+  .device-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-animation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    width: 80px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .device-name {
+    font-size: 1.1rem;
+    color: #fff;
+    text-align: center;
+  }
+  
