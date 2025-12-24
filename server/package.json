@@ -10,12 +10,27 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/express-sslify": "^1.2.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "@supabase/supabase-js": "^2.89.0",
+    "argon2": "^0.44.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-sslify": "^1.2.0",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.8.1",
+    "uuid": "^13.0.0"
   }
 }

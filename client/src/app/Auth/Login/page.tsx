@@ -1,11 +1,11 @@
-
-import Intro from "@/components/Intro/Intro";
-
+import Login from "@/components/Login/Login";
 
 
-export default function IntroPage() {
+
+
+export default function LoginPage() {
 
   return (
-    <Intro/>
+    <Login/>
   )
 }

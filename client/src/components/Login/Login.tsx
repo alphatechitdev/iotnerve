@@ -1,177 +1,151 @@
 "use client";
 
-import axios from "axios";
-import React, { useState } from "react";
-import {jwtDecode} from 'jwt-decode';
-import './Login.css';
-import { useAuth } from "../Context/AuthContext";
+import axios, { AxiosError } from "axios";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import ConnectingWindow from '../LoadingWindows/ConnectingWindow';
+import { useAuth } from "../Context/Auth.Context";
+import ConnectingWindow from "../LoadingWindows/ConnectingWindow";
+import { LoginData, LoginError, BackendResponse } from "@/types/loginData.types";
 
-const UserLogin = () =>{
-    const {setIsAuthenticated, setSelectedComponent} = useAuth();
-    const router = useRouter();
-    
-    const [loginData, setLoginData] = useState({
-        email: "",
-        password:""
-    })
+const Login: React.FC = () => {
+  const { setIsAuthenticated } = useAuth();
+  const router = useRouter();
 
+  const [loginData, setLoginData] = useState<LoginData>({
+    email: "",
+    password: "",
+  });
 
-    const [successMessage, setSuccessMessage] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<LoginError>({});
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
 
-    const  handleChange = (e) => {
-        const {name, value} = e.target;
+    setLoginData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-        setLoginData ((prevData) => ({
-            ...prevData,
-            [name] : value,
-        }))
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-    }
+    try {
+      setIsLoading(true);
+      setSuccessMessage("Logging You In...");
+      setErrors({});
 
-    const handleGoogleLogin = async (credentialResponse) => {
-        try {
-            const decoded = jwtDecode(credentialResponse.credential);
-            console.log("Google User Data:", decoded);
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/auth/google-login`, {
-                id_token: credentialResponse.credential,
-            },
-            {
-                withCredentials:true,
-            }
-            );
-            const responseData = response.data;
-
-            if(responseData.success){
-            setSuccessMessage("Login Successful")
-            setIsAuthenticated(true)
-            setSelectedComponent("Devices")
-            } else {
-                console.error("Google Login Failed:", responseData.message);
-            }
-        }  catch (error) {
-            console.error("Error in Google Login:", error);
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                Login: "Google Login Failed",
-            }));
+      const response = await axios.post<BackendResponse>(
+        `${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/auth/login`,
+        loginData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
-    }
+      );
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+      const data = response.data;
 
-        try {
-            setIsLoading(true);
-            setSuccessMessage("Logging You In...")
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/auth/login`, loginData, {
-            headers : {
-                'Content-Type' : 'application/json',
-            },
-            withCredentials:true
-        })
+      if (data.success) {
+        setSuccessMessage("Login Successful");
+        setIsAuthenticated(true);
+        router.push("/Devices");
+        return;
+      }
 
-        const responseData = response.data;
+      if (!data.account) {
+        setErrors({ Login: "Account Not Found" });
+      } else {
+        setErrors({ Login: "Invalid Password" });
+      }
+    } catch (err) {
+      setSuccessMessage("");
 
-        if(responseData.success) {
-            setSuccessMessage("Login Successful");
-            setIsAuthenticated(true);
-            router.push('/Devices');
+      const error = err as AxiosError<{ message?: string }>;
 
-        } else if (!responseData.account){
-            setErrors((prevData) => ({
-                ...prevData, 
-                Login : "Account Not Found",
-            }))
-        } else {
-           setErrors((prevData) =>({
-            ...prevData,
-            Login:"Invalid Password",
-           }))
-        }
-
-    } catch (error) {
-        setSuccessMessage("");
-        if (error.response) {
-            const backendError = error.response.data.message || "Unknown Error From Server"
-            setErrors((prevData) => ({
-                ...prevData,
-                Login:backendError,
-            }))
-        } else if (error.request) {
-            // No Response from Backend
-            setErrors((prevData) => ({
-                ...prevData,
-                Login: "No Response from Server",
-            }));
-        } else {
-            // Other Errors
-            setErrors((prevData) => ({
-                ...prevData,
-                Login: "Unexpected Error While Logging In",
-            }));
-        }
-
-       
+      if (error.response) {
+        setErrors({
+          Login: error.response.data?.message || "Unknown Error From Server",
+        });
+      } else if (error.request) {
+        setErrors({ Login: "No Response From Server" });
+      } else {
+        setErrors({ Login: "Unexpected Error While Logging In" });
+      }
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-    }
+  };
 
+  return (
+    <div className="w-full min-h-screen flex items-center justify-center bg-[#F8FAFC] px-4">
+      <div className="w-full max-w-md bg-white backdrop-blur-lg rounded-xl p-8 shadow-xl border border-slate-200">
 
+        <h1 className="text-2xl font-semibold text-black text-center mb-6">
+          Login to Alpha Connect Hub
+        </h1>
 
-    return (
+        <Link href="/" className="flex justify-center mb-4">
+          <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition">
+            Visit Main Page
+          </button>
+        </Link>
 
-        <div className="userLogin-page">
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+          <div>
+            <label className="text-gray-300">Email</label>
+            <input
+              name="email"
+              type="email"
+              value={loginData.email}
+              onChange={handleChange}
+              placeholder="Enter Email..."
+              className="w-full mt-1 px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+              required
+            />
+          </div>
 
-            <h1>Login To Your Alpha Connect Hub</h1>
-            
+          <div>
+            <label className="text-gray-300">Password</label>
+            <input
+              name="password"
+              type="password"
+              value={loginData.password}
+              onChange={handleChange}
+              placeholder="Enter Password..."
+              className="w-full mt-1 px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+              required
+            />
+          </div>
 
-            <Link href = '/'>
-            <button className="back-button">Visit Main Page</button>
-            </Link>
+          {successMessage && (
+            <p className="text-green-400 text-sm text-center">{successMessage}</p>
+          )}
 
-            <form className="userLogin-form" onSubmit={handleSubmit}>
+          {errors.Login && (
+            <p className="text-red-400 text-sm text-center">{errors.Login}</p>
+          )}
 
-                <label htmlFor="email">Email:</label>
-                <input 
-                name="email"
-                type="email"
-                value={loginData.email}
-                onChange={handleChange}
-                placeholder="Enter Email..."
-                />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 rounded-lg text-white font-semibold transition"
+          >
+            {isLoading ? "Logging In..." : "Login"}
+          </button>
 
-                <br/>
+          {isLoading && (
+            <div className="mt-4 flex justify-center">
+              <ConnectingWindow />
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
 
-
-                <label htmlFor="password">Password:</label>
-                <input
-                name="password"
-                type="password"
-                value={loginData.password}
-                onChange={handleChange}
-                placeholder="Enter Password..."
-                />
-
-                <br/>
-                {successMessage && <p className="successMessage">{successMessage}</p>}
-                
-                <button type="submit">{isLoading ? "Logging In..." : "Login"}</button>
-                <br/>
-                {isLoading && (
-                <ConnectingWindow/>
-            )}
-            </form>
-            {errors.Login && <p className="errors">{errors.Login}</p>}
-        </div>
-    )
-}
-
-
-export default UserLogin;
+export default Login;

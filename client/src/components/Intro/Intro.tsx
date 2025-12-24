@@ -1,6 +1,5 @@
-
-
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "../../../public/assets/IoTNerve.png";
@@ -9,49 +8,48 @@ import DeviceShowcase from "../DeviceShowcase/DeviceShowcase";
 
 export default function Intro() {
   return (
-    <main className="w-full min-h-screen bg-[#0B0F19] text-white flex flex-col items-center">
-      
+    <main className="w-full min-h-screen bg-[#F8FAFC] text-slate-700 flex flex-col items-center">
+
       {/* HERO */}
-      <header className="w-full max-w-6xl flex flex-col items-center text-center pt-20 pb-16 px-6">
+      <header className="w-full max-w-6xl mx-auto flex flex-col items-center pt-28 pb-24 px-6">
+
+        {/* Soft Background Gradient */}
+        <div className="absolute top-0 inset-x-0 h-[550px] bg-gradient-to-b from-blue-50 to-transparent pointer-events-none" />
+
+        {/* Logo */}
         <Image
           src={Logo}
           alt="IoT Nerve Logo"
           priority
-          className="w-40 opacity-90 hover:opacity-100 transition-all"
+          className="w-48 opacity-95 rounded-full drop-shadow-sm"
         />
 
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-[0.4em] mt-6 text-blue-400 drop-shadow-xl">
-          I O T - N E R V E
+        {/* Title */}
+        <h1 className="text-5xl md:text-7xl font-extrabold mt-8 tracking-tight text-slate-900 text-center">
+          IoT Nerve
         </h1>
 
+        {/* Subtitle */}
+        <p className="mt-5 text-lg md:text-xl max-w-2xl text-slate-500 leading-relaxed text-center">
+          A unified IoT operations suite for developers and businesses.  
+          Connect, visualize, and control your devices with clarity and precision.
+        </p>
+
         {/* Device Showcase */}
-        <div className="w-full mt-10 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl p-6 shadow-lg shadow-blue-500/10">
+        <div className="w-full max-w-4xl mt-16 rounded-3xl bg-white shadow-xl border border-slate-200 p-6">
           <DeviceShowcase />
         </div>
 
-        <p className="mt-8 max-w-3xl text-lg text-white/70 leading-relaxed">
-          One platform. Unlimited connections. IoT Nerve is a unified web system 
-          designed for developers, businesses and enthusiasts who demand clarity, speed, 
-          and maximum control.
-        </p>
-
-        <p className="mt-4 max-w-3xl text-lg text-white/60">
-          From smart homes to industrial automation, this hub bridges the gap between 
-          <span className="text-blue-400 font-semibold"> raw data </span> 
-          and 
-          <span className="text-blue-400 font-semibold"> real decisions</span>.
-        </p>
-
         {/* CTA */}
-        <div className="mt-10 flex flex-col md:flex-row gap-5">
-          <Link href="/Login">
-            <button className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition-all font-semibold shadow-lg shadow-blue-500/30">
+        <div className="mt-12 flex flex-col md:flex-row gap-4">
+          <Link href="/Auth/Login">
+            <button className="px-10 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all font-semibold shadow hover:shadow-md">
               Login
             </button>
           </Link>
 
-          <Link href="/Register">
-            <button className="px-8 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all font-semibold">
+          <Link href="/Auth/Register">
+            <button className="px-10 py-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 transition-all font-semibold">
               Register for Alpha Connect
             </button>
           </Link>
@@ -59,82 +57,87 @@ export default function Intro() {
       </header>
 
 
-      {/* REAL-TIME MONITORING */}
-      <section className="w-full max-w-5xl mt-20 text-center px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-blue-300">
-          Real-Time Insights. Smarter Decisions.
+
+      {/* REAL-TIME SECTION */}
+      <section className="w-full max-w-5xl mt-24 text-center px-6">
+        <h2 className="text-4xl font-bold text-slate-900">
+          Real-Time Intelligence
         </h2>
-        <p className="mt-4 text-white/70 max-w-3xl mx-auto">
-          Alpha Connect Hub empowers you to visualize, track and analyze live IoT device data —
-          from a single ESP32 to an entire industrial network.
+
+        <p className="mt-4 text-slate-500 max-w-3xl mx-auto text-lg">
+          Alpha Connect Hub transforms raw IoT signals into actionable live insights — 
+          whether you're managing smart homes or industrial infrastructure.
         </p>
-        <p className="mt-2 text-white/50 max-w-3xl mx-auto">
-          More than a dashboard — it’s the heartbeat of your IoT environment.
+
+        <p className="mt-2 text-slate-400">
+          Observe, analyze & act instantly.  
+          <span className="text-blue-600 font-semibold">Every second matters.</span>
         </p>
       </section>
 
 
-      {/* ALPHATECH SECTION */}
-      <section className="w-full max-w-6xl mt-24 mb-20 px-6">
-        <div className="text-center mb-10">
-          <div className="flex justify-center">
-            <Image src={ATLogo} alt="AlphaTech Logo" className="w-20 opacity-90" />
-          </div>
-          <h3 className="text-2xl md:text-3xl font-bold mt-4">
-            Powered by <span className="text-blue-400 drop-shadow">Alpha Tech</span>
+
+      {/* ALPHA TECH BLOCK */}
+      <section className="w-full max-w-6xl mt-28 mb-24 px-6">
+
+        {/* Logo & Title */}
+        <div className="text-center mb-14">
+          <Image src={ATLogo} alt="Alpha Tech" className="w-20 mx-auto opacity-95" />
+          <h3 className="text-3xl md:text-4xl font-bold mt-6 text-slate-900">
+            Powered by <span className="text-blue-600">Alpha Tech</span>
           </h3>
         </div>
 
-        <div className="max-w-4xl mx-auto text-white/70 text-lg leading-relaxed">
+        {/* Description */}
+        <div className="max-w-4xl mx-auto text-slate-600 text-lg leading-relaxed text-center">
           <p>
-            At <strong className="text-blue-300">Alpha Tech</strong>, we engineer ecosystems — 
-            not just software. Our mission is to elevate global connectivity with reliable, 
-            responsive and human-centered technology.
+            <strong className="text-blue-600">Alpha Tech</strong> builds scalable, human-centered systems engineered for reliability, security and global connectivity.
           </p>
 
-          <p className="mt-4">
-            <strong className="text-blue-300">Alpha Connect Hub</strong> uses cutting-edge protocols 
-            like <strong>MQTT</strong> and live data synchronization to deliver powerful,
-            secure, real-time device management.
+          <p className="mt-6">
+            The <strong className="text-blue-600">Alpha Connect Hub</strong> uses secure MQTT pipelines, device credentials, and real-time synchronization for seamless IoT management.
           </p>
         </div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-14">
           {[
-            "🧠 AI-Ready Infrastructure",
-            "⚙️ Protocol-Flexible",
-            "🛰️ Industry & Domestic Support",
-            "🔍 Transparent Data at Scale",
-          ].map((feat, idx) => (
+            { icon: "🧠", label: "AI-Optimized Infrastructure" },
+            { icon: "⚙️", label: "Protocol-Flexible Systems" },
+            { icon: "📡", label: "Industrial & Home IoT" },
+            { icon: "🔍", label: "Transparent Analytics" },
+          ].map((feat, i) => (
             <div
-              key={idx}
-              className="p-4 text-center rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all shadow-md"
+              key={i}
+              className="p-6 text-center rounded-xl bg-white border border-slate-200 hover:border-blue-200 shadow-sm hover:shadow transition-all"
             >
-              {feat}
+              <div className="text-3xl mb-3">{feat.icon}</div>
+              <div className="font-semibold text-slate-700">{feat.label}</div>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-white/50 mt-10">
-          Whether you manage one device or a thousand —  
-          <strong className="text-blue-300"> Alpha Connect </strong>  
-          gives you complete visibility.
+        {/* Final Note */}
+        <p className="text-center text-slate-500 mt-12 text-lg">
+          Total visibility. Total control.
           <br />
-          <em className="text-white/40">This is only the beginning.</em>
+          <em className="text-slate-400">You’re building the future — we power it.</em>
         </p>
 
+        {/* External Link */}
         <div className="text-center mt-10">
           <Link
             href="https://alphatechit.dev"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 transition-all text-lg font-semibold"
+            className="text-blue-600 hover:text-blue-500 font-semibold text-lg hover:underline"
           >
-            🚀 Explore Innovation at Alpha Tech ↗
+            🚀 Visit Alpha Tech →
           </Link>
         </div>
+
       </section>
+
     </main>
   );
 }
