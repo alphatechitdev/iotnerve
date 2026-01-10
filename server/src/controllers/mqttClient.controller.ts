@@ -1,25 +1,32 @@
-const mqtt = require("mqtt");
+import mqtt, {MqttClient} from "mqtt";
 import bcrypt from "bcrypt";
 import { AuthenticationCreds } from "@/types/mqttclient.types";
 import DevicesController from "./devices.controller";
 import MQTTCredsController from "./mqttCreds.controller";
+import { getCreds } from "@/types/mqttcreds.types";
+
+type TempStoreData = Record<string, Buffer>
 
 // Temporary in-memory store to simulate Redis
 export const tempStore = {
-    data: {},
-    async set(key, value) {
+    data: {} as TempStoreData,
+    async set(key:string, value:Buffer) {
         this.data[key] = value;
     },
-    async get(key) {
+    async get(key:string) {
         return this.data[key] || null;
     }
 };
 
-class MqttClient {
+class MqttClientController {
+    private mqtt_url : string;
+    private client: MqttClient | null;
+    private client_id: string | null;
+    private clientOF : Boolean;
+    private dataBuffer: [];
+    private cleanupInterval : number | null;
     constructor() {
         this.mqtt_url = `ws://${process.env.MQTT_BROKER_ADDRESS}:8083/mqtt`; // ✅ Set MQTT URL here
-        this.mcc = new MQTTCredsController();
-        this.dv = new DevicesController();
         this.client = null;
         this.client_id = null;
         this.clientOF = true;
@@ -29,12 +36,13 @@ class MqttClient {
 
     // Authenticate user and subscribe
     async authenticateClient(AuthCreds:AuthenticationCreds) {
-        try {
-            const {res, user_id, profile_id, password, password_flag} = AuthCreds;
-            
-            const credentials = await this.mcc.getCred(user_id, profile_id, "WS", password_flag);
-               
-            const authenticated = await bcrypt.compare(password, credentials.details[0].password_hash);
+
+        const {res, user_id, profile_id, password, password_flag} = AuthCreds;
+        try {            
+            const credentials = await MQTTCredsController.getCred(user_id, profile_id, "WS", password_flag);
+
+           
+            const authenticated = await bcrypt.compare(password, credentials.details[0].password_hash!);
     
             if (!authenticated) {
                 console.error("Authentication Failed");
@@ -51,7 +59,7 @@ class MqttClient {
     }
 
     // Connect to MQTT Server
-async connectClient(credentials, password) {
+async connectClient(credentials:getCreds, password:string) {
     try {
         // Ensure client is not already initialized
         if (this.client) {
@@ -128,5 +136,5 @@ async connectClient(credentials, password) {
 }
 
 // ✅ Exporting the MQTT client instance so it can be used in other modules
-export const mqttInstance = new MqttClient();
+export const mqttInstance = new MqttClientController();
 export const getClient = () => mqttInstance.getClient();

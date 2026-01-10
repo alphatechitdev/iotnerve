@@ -7,47 +7,51 @@ class ProfileController{
 
     }
 
-    async getProfiles(user_id:string){
+    static async getProfiles(user_id:string){
         try {
             const {data, error} = await supabase.from('profiles').select('*').eq('user_id', user_id);
 
             if(error) {
                 console.error("Error While Fetching, ",error);
-                return {fetch:false, profile:""}
+                return {fetch:false, profile:[]};
             }
 
             if(data.length>0) {
                 return {fetch:true, profile:data}
             } else {
-                return {fetch:false, profile:""}
+                return {fetch:false, profile:[]};
             }
 
         } catch (error) {
-            console.error("Error While Fetching Profiles, ", error)
+            console.error("Error While Fetching Profiles, ", error);
+            return {fetch:false, profile:[]};
+
         }
     }
 
-    async addProfile(profileData:addProfilesParams){
+    static async addProfile(profileData:addProfilesParams){
         try {
             const {user_id, profile_name, description} = profileData;
             const {data, error} = await supabase.from('profiles').insert([{user_id,profile_name, description}]).select('profile_id');
 
             if(error) {
                 console.error("Error While Making Profile, ",error);
-                return {make:false, profile:""}
+                return {make:false, profile:[]}
             }
 
             if(data.length>0) {
                 return {make:true, profile:data}
             } else {
-                return {make:false, profile:""}
+                return {make:false, profile:[]}
             }
 
         } catch (error) {
-            console.error("Error While Fetching Profiles, ", error)
+            console.error("Error While Fetching Profiles, ", error);
+            return {make:false, profile:[]}
+
         }
     }
-    async deleteProfile(profile_id:string, user_id:string){
+    static async deleteProfile(profile_id:string, user_id:string){
         try {
             const {data, error} = await supabase.from('profiles').delete().eq('profile_id', profile_id).eq('user_id', user_id);
 
@@ -59,7 +63,9 @@ class ProfileController{
             console.log("Delete Prof Success!")
             return {delete:true}
         } catch (error) {
-            console.error("Error While Deleting Profile, ", error)
+            console.error("Error While Deleting Profile, ", error);
+            return {delete:false};
+
         }
     }
 };

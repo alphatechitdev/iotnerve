@@ -1,13 +1,11 @@
 /********** 📘 Devices Routes (OWASP) Status: Pass ✅ **********/
 
-
-
-import express from 'express';
+import express, {Request, Response} from 'express';
 const MqttRoutes = express.Router();
 const {mqttInstance, tempStore} = require('@/controllers/mqttClient.controller');
 import { verifyToken } from '@/middlewares/verifyToken';
 import MQTTCredsController from '@/controllers/mqttCreds.controller';
-const mqttDataController = require('../controllers/mqttData.controller');
+import MQTTDataController from '@/controllers/mqttData.controller';
 const verifyProfileToUser = require('../utilities/verifyProfileToUser');
 
 
@@ -16,10 +14,8 @@ MqttRoutes.put('/reset-cred/:reg_id', verifyToken, async (req, res) => {
         // Access Control (DB-Schema) 
 
         const reg_id = req.params.reg_id;
-        const {password} = req.body
-
-        const MCC = new MQTTCredsController();
-        const result = await MCC.resetPassword(reg_id, req.user_id, password);
+        const {oldPassword, newPassword} = req.body
+        const result = await MQTTCredsController.resetPassword(reg_id, req.user, newPassword, oldPassword);
 
         if(result.reset) {
             res.status(200).json({reset:true,message:"Success"})
@@ -32,10 +28,10 @@ MqttRoutes.put('/reset-cred/:reg_id', verifyToken, async (req, res) => {
 });
 
 
-MqttRoutes.get('/get-mqtt-mongodb', verifyToken, async (req, res) => {
+MqttRoutes.get('/get-mqtt-mongodb', verifyToken, async (req:Request, res:Response) => {
     // Access Control (DB-Schema) 
-    const {topic} = req.query;
-    const result = await mqttDataController.getIoTData(topic, req.user_id);
+    const topic = req.query.topic as string;
+    const result = await MQTTDataController.getIoTData(topic, req.user);
     res.status(200).json(result);
 });
 
@@ -46,27 +42,26 @@ MqttRoutes.post('/register-client', verifyToken, async (req, res) => {
 
     try {
         const submissionData = req.body;
-        const MCC =  new MQTTCredsController();
-        const result = await MCC.addUserToEMQX(submissionData);
+        const result = await MQTTCredsController.addUserToEMQX(submissionData, req.user);
 
         if(result.success) {
             res.status(200).json({success:true, reg_id:result.reg_id})
         } else {
             res.status(400).json({success:false, message:"Registration Failed"})
         }
-    } catch {
-        res.status(500).json("Internal Server Error")
+    } catch (error){
+        console.error("Error While Registering Client, ", error);
+        res.status(500).json({message:"Internal Server Error"});
     }
 });
 
-MqttRoutes.post('/get-details', verifyToken, async (req, res) => {
+MqttRoutes.post('/get-details', verifyToken, async (req:Request, res:Response) => {
     try {
 
         const {profile_id, creds_mode} = req.body;
-        verifyProfileToUser(req.user_id, profile_id);
+        verifyProfileToUser(req.user, profile_id);
         const password_flag = false;
-        const HC = new handleCred();
-        const result = await HC.getCred(req.user_id,profile_id,creds_mode, password_flag);
+        const result = await MQTTCredsController.getCred(req.user,profile_id,creds_mode, password_flag);
 
         if(result.cred) {
             res.status(200).json({success:true, creds:result.details})
@@ -82,8 +77,8 @@ MqttRoutes.post('/subscribeData', async (req, res) => {
     try {
 
         const {profile_id, device_id} = req.body;
-        const result = await handleData.subscribeToData(res, device_id, profile_id);
-
+        const MQDC = new MQTTDataController();
+        const result = await MQDC.subscribeToData(res,req, device_id, profile_id);
     }  catch (error) {
         res.status(500).json({success:false, message:"Internal Server Error"})
     }
@@ -119,4 +114,4 @@ MqttRoutes.get('/status', async (req, res) => {
 });
 
 
-module.exports = MqttRoutes;
+export default MqttRoutes;

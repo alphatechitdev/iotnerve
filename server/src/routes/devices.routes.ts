@@ -2,6 +2,7 @@ import express, {Request, Response}from 'express';
 import { verifyToken } from '@/middlewares/verifyToken';
 const DeviceRoutes = express.Router();
 import DevicesController  from '../controllers/devices.controller';
+import verifyProfileToUser from '@/utilities/verifyProfile';
 
 
 DeviceRoutes.get('/get-devices', verifyToken, async (req : Request, res:Response)=>{  

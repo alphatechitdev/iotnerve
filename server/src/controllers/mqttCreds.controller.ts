@@ -1,6 +1,6 @@
 import supabase from "@/configs/serverdb.config";
-import { connectionCreds } from "@/types/mqttcreds.types";
-import hashPassword from "@/utilities/hashing";
+import { connectionCreds, getCreds } from "@/types/mqttcreds.types";
+import hashPassword, { verifyPassword } from "@/utilities/hashing";
 
 class MQTTCredsController {
     constructor () {
@@ -8,7 +8,7 @@ class MQTTCredsController {
     }
 
     
-    static async getCred(user_id:string, profile_id:string, creds_mode:string, password_flag:boolean) {
+    static async getCred(user_id:string, profile_id:string, creds_mode:string, password_flag:boolean) :Promise<getCreds>{
     
         try {
             let query;
@@ -33,21 +33,21 @@ class MQTTCredsController {
     
             if (error) {
                 console.error("Error While Fetching:", error.message);
-                return { cred: false };
+                return { cred: false , details:[]};
             }
     
-            return data.length > 0 ? { cred: true, details: data } : { cred: false };
+            return { cred: true, details: data };
         } catch (error) {
             console.error("Unexpected Error Fetching:", error);
-            return { cred: false };
+            return { cred: false, details:[]};
         }
     }
     
 
-    static async addUserToEMQX (connectionCreds:connectionCreds) {
+    static async addUserToEMQX (connectionCreds:connectionCreds, user_id:string) {
         try {
 
-            const {user_id, username, password, selectedProfile} = connectionCreds;
+            const {username, password, selectedProfile} = connectionCreds;
 
             const password_hash = await hashPassword(password);
             const profile_id = selectedProfile; 
@@ -62,9 +62,9 @@ class MQTTCredsController {
                 console.error("Error While Registering For MQTT ", error);
                 return {success:false};
             }
-            if(data.length>0){
-                return {success:true, reg_id:data[0].reg_id, username:username};
-            }
+
+            return {success:true, reg_id:data[0].reg_id, username:username};
+            
         } catch (error) {
             console.error('Error adding user to EMQX:', error);
             return {success:false};
@@ -72,30 +72,46 @@ class MQTTCredsController {
     }
 
 
-    static async resetPassword(reg_id:string, user_id:string, password:string){
+    static async resetPassword(reg_id:string, user_id:string, newPassword:string, oldPassword:string){
 
         try {
-            const password_hash = await hashPassword(password);
-
-            const {data, error} = await supabase
+            const {data:user, error:fetchError} = await supabase
             .from('mqtt_users_cred')
-            .update({password_hash})
+            .select('password_hash')
+            .eq('reg_id', reg_id)
+            .eq('user_id', user_id)
+            .single();
+
+            if (fetchError || !user) {
+                console.error("User Not Found, ", fetchError);
+                return {reset:false};
+            }
+
+            const isValid = verifyPassword(user.password_hash, oldPassword);
+
+            if (!isValid) {
+                return {reset:false};
+            }
+
+            const new_password_hash = await hashPassword(newPassword);
+
+
+            const {error:updateError} = await supabase
+            .from('mqtt_users_cred')
+            .update({password_hash:new_password_hash})
             .eq('reg_id', reg_id)
             .eq('user_id', user_id)
             .select('username')
 
 
-            if(error) {
-                console.error("Error While Reseting", error);
-                return {reset:false}
-            } 
-            if(data.length>0){
-                console.log("Reset Success!")
-                return {reset:true}
-            } else {
-                console.log("Failed")
+            if(updateError) {
+                console.error("Error While Reseting", updateError);
                 return {reset:false}
             }
+
+            console.log("Reset Success!");
+            return {reset:true};
+    
         } catch (error) {
             console.error("Error While Reseting, ", error);
             return {reset:false}

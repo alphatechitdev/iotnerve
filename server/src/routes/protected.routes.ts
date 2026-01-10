@@ -1,5 +1,5 @@
-const express = require('express');
-const verifyToken = require('../middleware/verifyToken');
+import { verifyToken } from '@/middlewares/verifyToken';
+import express from 'express';
 const ProtectedRoutes  = express.Router();
 
 
@@ -7,4 +7,4 @@ ProtectedRoutes.get('/protected-route', verifyToken , (req , res) => {
     res.status(200).json({success:true, user_id:req.user})
 });
 
-module.exports = ProtectedRoutes;
+export default ProtectedRoutes;

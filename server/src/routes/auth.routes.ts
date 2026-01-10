@@ -63,4 +63,4 @@ AuthRoutes.post('/logout', async (req: Request, res:Response) => {
 });
 
 
-module.exports = AuthRoutes;
+export default AuthRoutes;

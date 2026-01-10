@@ -7,14 +7,13 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import {initSocket,sendToFrontend} from'./socketService';
 import { mqttInstance }  from './controllers/mqttClient.controller';
-import DeviceRoutes from('./routes/devices.routes');
-import AuthRoutes  from('./routes/auth.routes');
-import SubsRoutes from './routes/subscription.routes');
 import MqttRoutes from './routes/mqtt.routes';
 import CodeRoutes from './routes/code.routes';
 import ControlRoutes from './routes/control.routes';
 import ProfileRoutes from'./routes/profile.routes';
 import ProtectedRoutes from './routes/protected.routes';
+import DeviceRoutes from './routes/devices.routes';
+import AuthRoutes from './routes/auth.routes';
 
 const app = express();
 app.set('trust proxy', 1);

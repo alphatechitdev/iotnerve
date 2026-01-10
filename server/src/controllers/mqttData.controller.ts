@@ -1,18 +1,17 @@
-import {Response} from 'express';
+import {Response, Request} from 'express';
 import { getClient } from './mqttClient.controller';
-import MQTTCredsController from './mqttCreds.controller';
 import DevicesController from './devices.controller';
+import { sendToFrontend } from '@/socketService';
+import {MqttClient, IClientSubscribeOptions, Packet} from 'mqtt';
 const {connectDB} = require('../configs/mongodbconfig');
 
 
 class MQTTDataController {
 
-    private mcc : MQTTCredsController;
     private dataBuffer: any[];
     private cleanupInterval: NodeJS.Timeout | null;
 
     constructor() {
-        this.mcc = MQTTCredsController;
         this.dataBuffer = [];  
         this.cleanupInterval = null; 
     }
@@ -32,7 +31,7 @@ class MQTTDataController {
 
     }
 
-    async getIoTData(topic:string, user_id:string){
+    static async getIoTData(topic:string, user_id:string){
         const db = await connectDB();
         const collection = db.collection("deviceData");
 
@@ -48,13 +47,16 @@ class MQTTDataController {
     
 
     // Subscribe to MQTT topic
-    async subscribeToData(res:Response, device_id:string, profile_id:string) {
+    async subscribeToData(res:Response, req: Request, device_id:string, profile_id:string) {
         try {
 
-            const deviceData = await DevicesController.getDevices(device_id, profile_id);
+            const deviceData = await DevicesController.getDevices(device_id, profile_id, req.user);
                 const topic = deviceData.result[0].mqtt_topic;
-                const client = getClient();
-                client.subscribe(topic, (err) => {
+                const client : MqttClient | null = getClient();
+                if (!client) {
+                    return res.status(500).json({live:false});
+                }
+                client.subscribe(topic, (err:Error|null) => {
                     if (!err) {
                         console.log(`Subscribed to topic: ${topic}`);
                         res.status(200).json({live:true});
@@ -66,13 +68,13 @@ class MQTTDataController {
                 });
             
 
-                client.on("message", (topic, message) => {
+                client.on("message", (topic:string, message:Buffer, packet:Packet) => {
                 const msg = message.toString();
                 console.log(`Received message on ${topic}: ${msg}`);
 
                 // Store message in buffer
                 this.dataBuffer.push({ topic, message: msg });
-                this.saveIoTData(topic, msg);
+                this.saveIoTData(topic, msg, req.user);
                 sendToFrontend('mqtt_message', { topic, message: msg });
 
                 // Start auto-cleanup timer if not already running
@@ -113,4 +115,4 @@ class MQTTDataController {
 }
 
 
-module.exports = new MQTTDataController();
+export default MQTTDataController;

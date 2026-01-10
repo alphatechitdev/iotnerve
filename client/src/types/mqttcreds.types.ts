@@ -2,6 +2,11 @@
 
 
 
+
+
+
+
+
 export interface connectionCreds{
     user_id:string;
     username:string;
@@ -18,5 +23,5 @@ export interface getCreds{
     mqtt_port: number;
     client_id: string;
     password_hash?: string;
-    }[];
+    };
 }
