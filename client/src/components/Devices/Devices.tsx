@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import './Devices.css';
 import axios from 'axios';
 import { io } from "socket.io-client";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -52,7 +51,6 @@ const Devices = () => {
   });
 
 
-  // Fetch devices and authentication details
   const closeConnection = async () => {
     const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/mqtt/disconnect-mqtt`, {withCredentials:true});
     if(response.data.close === true){
@@ -165,20 +163,17 @@ const Devices = () => {
     fetchConnectionDetails();
   }, [profile_id, user_id]);
 
-  // Handle MQTT messages
   useEffect(() => {
     socket.on("mqtt_message", (data) => {
       console.log("MQTT Message Received:", data);
       setOperationData((prevData) => [...prevData, data]);
     });
 
-    // Cleanup socket listener on unmount
     return () => {
       socket.off("mqtt_message");
     };
   }, []);
 
-  // Debugging: Log updates when operationData changes
   useEffect(() => {
     console.log("Updated Operational Data:", operationData);
   }, [operationData]);
@@ -194,7 +189,6 @@ const Devices = () => {
     }
   }
 
-  // Fetch operational data after authentication
   const connectMQTTServer = async () => {
     if (!username || !password) {
       alert("Please enter your credentials.");
@@ -224,7 +218,6 @@ const Devices = () => {
     }
   };
 
-  // Fetch operational data after authentication
   const fetchOperationalData = async () => {
     if (!username || !password) {
       alert("Connect To MQTT First...");
@@ -250,12 +243,11 @@ const Devices = () => {
     }
   };
 
-  
-  
   return (
-    <div className="deviceTab">
-      <div className="deviceList">
-        <h2>Devices</h2>
+    <div className="min-h-screen bg-[#F8FAFC] text-black p-5">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lG:grid-cols-3 gap-6">
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-5 text-gray-100 space-y-4">
+        <h2 className="text-2xl text-gray-100 ">Devices</h2>
         <button
         style={{
           backgroundColor:"red",
@@ -275,13 +267,14 @@ const Devices = () => {
 
               </button>
             
-        <ul>
+        <ul className="mt-1 space-y gap-3">
   
           {devices.map((device) => (
             <li
               key={device.device_id}
               onClick={() => setSelectedDevice(device)}
-              className={selectedDevice?.device_id === device.device_id ? "active" : ""}
+              className={selectedDevice?.device_id === device.device_id ? "p-2 rounded-lg bg-gradient-to-br from-green-400 to-green-600 text-white font-semibold" 
+                : "p-2 rounded-lg cursor-pointer transition-all text-gray-100 hover:bg-gradient-to-br hover:from-green-400 hover:to-green-800 hover:text-bold hover:font-semibold"}
             >
               {device.device_name}
             </li>
@@ -290,7 +283,7 @@ const Devices = () => {
       </div>
 
       {isAuthModalOpen && (
-        <div className="authModal">
+        <div className="bg-white text-gray-800 rounded-2xl text-centre flex flex-col gap-3">
           <h3>Authentication Required</h3>
           <form>
           <input
@@ -318,23 +311,29 @@ const Devices = () => {
       )}
 
 
-      <div className="deviceDetails">
+      <div className="lG:col-span-2 space-y-6 text-xl text-black">
         {selectedDevice ? (
-          <div>
-            <h3>{selectedDevice.device_name}</h3>
-            <p><strong>Type:</strong> {selectedDevice.device_type}</p>
-            <p><strong>Handler:</strong> {selectedDevice.device_handler}</p>
-            <p><strong></strong></p>
-            <button onClick={() => setCodeProcess(true)}>Get Connection Code(.cpp)</button>
+          <div className="bg-blue-300 p-6 space-y-4 shadow-sm rounded-2xl">
+            <div className="border-b pb-3">
+            <h3 className="text-2xl font-semibold">{selectedDevice.device_name}</h3>
+            <p className="text-sm text-gray-600">{selectedDevice.device_type}  • {selectedDevice.device_handler}</p>
+            </div>
+            <div>
+            <button className="bg-cyan-700 text-white p-2 rounded-2xl" onClick={() => setCodeProcess(true)}>Get Connection Code(.cpp)</button>
             {codeProcess && selectedDevice &&
             <CodeFetch selectedDevice={selectedDevice} authentication={authentication}/>
 
             }
-            <button className="server-info-button" onClick={() => setServerInfoVisible(true)}>Get Connection Access Info</button>
+            <button 
+            className="bg-cyan-700 p-2 text-white rounded-2xl"
+            onClick={() => setServerInfoVisible(true)}>
+              Get Connection Access Info
+              </button>
+            </div>
 
             {serverInfoVisible && (
-  <div className="serverInfo">
-    <h3>🔐 Server Info (Connection Access)</h3>
+  <div className="bg-green-700 p-3 rounded-2xl">
+    <h3 className="text-2xl font-bold">🔐 Server Info (Connection Access)</h3>
     <p><strong>Server Address:</strong> {authentication?.mqtt_server}</p>
     <p><strong>Server Port:</strong> {authentication?.mqtt_port}</p>
     <p><strong>Server URL:</strong> <code>ws://{authentication?.mqtt_server}:{authentication?.mqtt_port}/mqtt</code></p>
@@ -406,6 +405,7 @@ const Devices = () => {
         ) : (
           <p>No Live operational data available...Check IoT Device</p>
         )}
+      </div>
       </div>
     </div>
   );

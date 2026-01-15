@@ -6,7 +6,7 @@ const ProfileRoutes = express.Router();
 ProfileRoutes.get('/getProfiles', verifyToken, async (req, res) => {
     try {
 
-        const result = await ProfileController.getProfiles(req.user);
+        const result = await ProfileController.getProfiles(req.userId);
 
         if(result.fetch) {
             res.status(200).json({success:true, profiles:result.profile})
@@ -21,7 +21,7 @@ ProfileRoutes.get('/getProfiles', verifyToken, async (req, res) => {
 ProfileRoutes.post('/addProfile', verifyToken, async (req, res) => {
     try {
         const {profile_name, description} = req.body;
-        const result = await ProfileController.addProfile({profile_name, description, user_id:req.user});
+        const result = await ProfileController.addProfile({profile_name, description, user_id:req.userId});
 
         if(result.make) {
             res.status(200).json({success:true, profiles:result.profile})
@@ -36,7 +36,7 @@ ProfileRoutes.post('/addProfile', verifyToken, async (req, res) => {
 ProfileRoutes.delete('/deleteProfile/:profile_id', verifyToken, async (req, res) => {
     const {profile_id} = req.params;
 
-    const result = await ProfileController.deleteProfile(profile_id,req.user);
+    const result = await ProfileController.deleteProfile(profile_id,req.userId);
     if(result.delete){
         res.status(200).json({success:true, message:"Profile deleted"});
     } else if (!result.delete){

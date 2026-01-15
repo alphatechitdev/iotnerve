@@ -2,8 +2,9 @@ import {Response, Request} from 'express';
 import { getClient } from './mqttClient.controller';
 import DevicesController from './devices.controller';
 import { sendToFrontend } from '@/socketService';
-import {MqttClient, IClientSubscribeOptions, Packet} from 'mqtt';
-const {connectDB} = require('../configs/mongodbconfig');
+import {MqttClient, Packet} from 'mqtt';
+import connectDB from '@/configs/mongodb.config';
+
 
 
 class MQTTDataController {
@@ -36,7 +37,6 @@ class MQTTDataController {
         const collection = db.collection("deviceData");
 
         const query = {
-            user_id:user_id,
             topic: topic,
         }
 
@@ -50,7 +50,7 @@ class MQTTDataController {
     async subscribeToData(res:Response, req: Request, device_id:string, profile_id:string) {
         try {
 
-            const deviceData = await DevicesController.getDevices(device_id, profile_id, req.user);
+            const deviceData = await DevicesController.getDevices(device_id, profile_id, req.userId);
                 const topic = deviceData.result[0].mqtt_topic;
                 const client : MqttClient | null = getClient();
                 if (!client) {
@@ -74,7 +74,7 @@ class MQTTDataController {
 
                 // Store message in buffer
                 this.dataBuffer.push({ topic, message: msg });
-                this.saveIoTData(topic, msg, req.user);
+                this.saveIoTData(topic, msg, req.userId);
                 sendToFrontend('mqtt_message', { topic, message: msg });
 
                 // Start auto-cleanup timer if not already running

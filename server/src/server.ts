@@ -47,7 +47,6 @@ mqttInstance.resetOnStartup();
 // User Related API Routing
 app.use('/auth', AuthRoutes);
 app.use('/devices', DeviceRoutes);
-app.use('/subscription', SubsRoutes);
 app.use('/mqtt', MqttRoutes);
 app.use('/code', CodeRoutes);
 app.use('/controls', ControlRoutes)

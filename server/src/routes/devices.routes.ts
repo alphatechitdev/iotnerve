@@ -10,7 +10,7 @@ DeviceRoutes.get('/get-devices', verifyToken, async (req : Request, res:Response
         const profile_id = req.query.profile_id as string;
         const device_id = null;
 
-        const result = await DevicesController.getDevices(device_id, profile_id, req.user);
+        const result = await DevicesController.getDevices(device_id, profile_id, req.userId);
 
         if(!result.fetch) {
             res.status(404).json({fetch:false,result:[]})
@@ -27,7 +27,7 @@ DeviceRoutes.delete('/delete-device/:device_id', verifyToken, async (req:Request
     try {
         const device_id = req.params.device_id;
 
-        const result = await DevicesController.deleteDevice(device_id, req.user);
+        const result = await DevicesController.deleteDevice(device_id, req.userId);
 
         if(result.success) {
             res.status(200).json({delete:true})

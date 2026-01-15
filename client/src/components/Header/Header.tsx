@@ -101,9 +101,7 @@ const Header = () => {
 
   return (
     <div className="w-full flex flex-col">
-      {/* HEADER */}
       <header className="w-full flex justify-between items-center px-4 py-3 bg-gray-900 border-b border-gray-700 text-white">
-        {/* Sidebar Toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 hover:bg-gray-800 rounded-xl transition"
@@ -111,13 +109,11 @@ const Header = () => {
           {sidebarOpen ? <X /> : <Menu />}
         </button>
 
-        {/* Logo */}
         <div className="flex items-center gap-2">
           <Image src={logo} alt="IoT Nerve Logo" width={45} height={45} />
           <h2 className="text-xl font-semibold tracking-wide">IoT Nerve</h2>
         </div>
 
-        {/* Right CTA */}
         {isAuthenticated ? (
           <button
             onClick={handleLogout}
@@ -135,13 +131,11 @@ const Header = () => {
         )}
       </header>
 
-      {/* SIDEBAR */}
       <aside
-        className={`fixed top-0 left-0 h-full bg-gray-950 text-white w-72 border-r border-gray-800 p-4 transition-transform duration-300 z-50 ${
+        className={`fixed top-0 left-0 h-full bg-gray-900 text-white w-72 border-r border-gray-800 p-4 transition-transform duration-300 z-50 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* PROFILES */}
         <div>
           <h3 className="text-lg font-semibold mb-3">Your Profiles</h3>
           <div className="flex flex-col gap-2">
@@ -151,7 +145,7 @@ const Header = () => {
                 onClick={() => handleProfileClick(p.profile_id)}
                 className={`px-3 py-2 rounded-lg text-left transition ${
                   activeProfile === p.profile_id
-                    ? "bg-blue-600"
+                    ? "bg-[#2AA2FB]"
                     : "bg-gray-800 hover:bg-gray-700"
                 }`}
               >
@@ -161,13 +155,12 @@ const Header = () => {
           </div>
         </div>
 
-        {/* SIDEBAR MODES */}
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => setSidebarMode("App")}
             className={`px-3 py-1 rounded-lg ${
               sidebarMode === "App"
-                ? "bg-blue-600"
+                ? "bg-[#2AA2FB]"
                 : "bg-gray-700 hover:bg-gray-600"
             }`}
           >

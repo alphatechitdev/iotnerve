@@ -6,7 +6,7 @@ const {mqttInstance, tempStore} = require('@/controllers/mqttClient.controller')
 import { verifyToken } from '@/middlewares/verifyToken';
 import MQTTCredsController from '@/controllers/mqttCreds.controller';
 import MQTTDataController from '@/controllers/mqttData.controller';
-const verifyProfileToUser = require('../utilities/verifyProfileToUser');
+import verifyProfileToUser from '@/utilities/verifyProfile';
 
 
 MqttRoutes.put('/reset-cred/:reg_id', verifyToken, async (req, res) => {
@@ -15,7 +15,7 @@ MqttRoutes.put('/reset-cred/:reg_id', verifyToken, async (req, res) => {
 
         const reg_id = req.params.reg_id;
         const {oldPassword, newPassword} = req.body
-        const result = await MQTTCredsController.resetPassword(reg_id, req.user, newPassword, oldPassword);
+        const result = await MQTTCredsController.resetPassword(reg_id, req.userId, newPassword, oldPassword);
 
         if(result.reset) {
             res.status(200).json({reset:true,message:"Success"})
@@ -31,7 +31,7 @@ MqttRoutes.put('/reset-cred/:reg_id', verifyToken, async (req, res) => {
 MqttRoutes.get('/get-mqtt-mongodb', verifyToken, async (req:Request, res:Response) => {
     // Access Control (DB-Schema) 
     const topic = req.query.topic as string;
-    const result = await MQTTDataController.getIoTData(topic, req.user);
+    const result = await MQTTDataController.getIoTData(topic, req.userId);
     res.status(200).json(result);
 });
 
@@ -42,7 +42,7 @@ MqttRoutes.post('/register-client', verifyToken, async (req, res) => {
 
     try {
         const submissionData = req.body;
-        const result = await MQTTCredsController.addUserToEMQX(submissionData, req.user);
+        const result = await MQTTCredsController.addUserToEMQX(submissionData, req.userId);
 
         if(result.success) {
             res.status(200).json({success:true, reg_id:result.reg_id})
@@ -59,9 +59,9 @@ MqttRoutes.post('/get-details', verifyToken, async (req:Request, res:Response) =
     try {
 
         const {profile_id, creds_mode} = req.body;
-        verifyProfileToUser(req.user, profile_id);
+        verifyProfileToUser(req.userId, profile_id);
         const password_flag = false;
-        const result = await MQTTCredsController.getCred(req.user,profile_id,creds_mode, password_flag);
+        const result = await MQTTCredsController.getCred(req.userId,profile_id,creds_mode, password_flag);
 
         if(result.cred) {
             res.status(200).json({success:true, creds:result.details})

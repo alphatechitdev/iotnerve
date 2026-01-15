@@ -13,7 +13,8 @@ export const verifyToken = (req: Request, res:Response, next:NextFunction) => {
 
     jwt.verify(token, JWT_SECRET, (err:VerifyErrors, decoded:JwtPayload) => {
         if (err) res.status(403).json({error:"Forbidden"});
-        req.user = decoded.user_id;
+        req.userId = decoded.userId as string;
+        req.sessionId = decoded.sessionId as string;
         next();
     })
 }

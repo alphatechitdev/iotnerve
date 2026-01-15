@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import { useState } from "react";
-import './CodeFetch.css'
 const CodeFetch = ({selectedDevice, authentication}) => {
 
     const [codeMessage, setCodeMessage] = useState('');

@@ -1,10 +1,10 @@
+import supabase from "@/configs/serverdb.config";
 import { LoginCreds, RegisterCreds } from "@/types/authcreds.types";
 import hashPassword, { verifyPassword } from "@/utilities/hashing";
-
-const supabase = require('../configs/dbconfig');
-
-
-
+import {v4 as uuid} from "uuid";
+import UAParser from "ua-parser-js";
+import {Request} from "express";
+import redis from "@/lib/redis";
 
 class AuthController {
     constructor () {
@@ -46,7 +46,7 @@ class AuthController {
         const {data, error} = await supabase.from('users').select('hashed_password , user_id').eq('email', email)
 
         if (error) {
-            console.log("Error While Registering", error)
+            console.log("Error While Logging In", error)
         }
 
         if(data.length == 0) {
@@ -63,6 +63,8 @@ class AuthController {
             console.log("Invalid Password")
             return {success:false, account:true, message:"Account Not Registered"}
         }
+        
+        
         return {success:true, account:true, user_id, message:"Login Successful"}
 
     }
