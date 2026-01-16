@@ -52,7 +52,7 @@ const Login: React.FC = () => {
       if (data.success) {
         setSuccessMessage("Login Successful");
         setIsAuthenticated(true);
-        router.push("/Dashboard/Devices");
+        router.push("/dashboard/devices");
         return;
       }
 

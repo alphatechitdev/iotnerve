@@ -34,7 +34,7 @@ const Header = () => {
 
   // 🔥 Redirect on selected component change
   useEffect(() => {
-    if (selectedComponent) router.push(`/${selectedComponent}`);
+    if (selectedComponent) router.push(`${selectedComponent}`);
   }, [selectedComponent]);
 
   // 🔐 Check Authentication
@@ -184,28 +184,28 @@ const Header = () => {
             <ul className="space-y-2">
               <li
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer"
-                onClick={() => setSelectedComponent("Devices")}
+                onClick={() => setSelectedComponent("/dashboard/devices")}
               >
                 <LayoutDashboard size={18} /> Devices
               </li>
 
               <li
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer"
-                onClick={() => setSelectedComponent("AddDevice")}
+                onClick={() => setSelectedComponent("/dashboard/add-device")}
               >
                 <PlusCircle size={18} /> Add Device
               </li>
 
               <li
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer"
-                onClick={() => setSelectedComponent("Profiles")}
+                onClick={() => setSelectedComponent("/dashboard/profiles")}
               >
                 <User size={18} /> Manage Profiles
               </li>
 
               <li
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 cursor-pointer"
-                onClick={() => setSelectedComponent("Server")}
+                onClick={() => setSelectedComponent("/dashboard/server")}
               >
                 <Server size={18} /> Server Access
               </li>

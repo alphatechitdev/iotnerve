@@ -42,13 +42,13 @@ export default function Intro() {
 
         {/* CTA */}
         <div className="mt-12 flex flex-col md:flex-row gap-4">
-          <Link href="/Auth/Login">
+          <Link href="/auth/login">
             <button className="px-10 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all font-semibold shadow hover:shadow-md">
               Login
             </button>
           </Link>
 
-          <Link href="/Auth/Register">
+          <Link href="/auth/signup">
             <button className="px-10 py-3 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 transition-all font-semibold">
               Register for Alpha Connect
             </button>

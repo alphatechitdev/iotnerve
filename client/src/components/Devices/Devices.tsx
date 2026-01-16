@@ -318,21 +318,25 @@ const Devices = () => {
             <h3 className="text-2xl font-semibold">{selectedDevice.device_name}</h3>
             <p className="text-sm text-gray-600">{selectedDevice.device_type}  • {selectedDevice.device_handler}</p>
             </div>
-            <div>
-            <button className="bg-cyan-700 text-white p-2 rounded-2xl" onClick={() => setCodeProcess(true)}>Get Connection Code(.cpp)</button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button 
+              className="bg-cyan-700 text-white py-2 rounded-lg"
+              onClick={() => setCodeProcess(true)}
+              >Get Connection Code(.cpp)
+              </button>
+               <button 
+            className="bg-cyan-700 py-2 text-white rounded-lg"
+            onClick={() => setServerInfoVisible(true)}>
+              Get Connection Access Info
+              </button>
             {codeProcess && selectedDevice &&
             <CodeFetch selectedDevice={selectedDevice} authentication={authentication}/>
 
             }
-            <button 
-            className="bg-cyan-700 p-2 text-white rounded-2xl"
-            onClick={() => setServerInfoVisible(true)}>
-              Get Connection Access Info
-              </button>
             </div>
 
             {serverInfoVisible && (
-  <div className="bg-green-700 p-3 rounded-2xl">
+  <div className="bg-green-700 text-white p-4 rounded-xl space-y-1 text-sm">
     <h3 className="text-2xl font-bold">🔐 Server Info (Connection Access)</h3>
     <p><strong>Server Address:</strong> {authentication?.mqtt_server}</p>
     <p><strong>Server Port:</strong> {authentication?.mqtt_port}</p>
@@ -340,19 +344,29 @@ const Devices = () => {
     <p><strong>Device Topic:</strong> <code>{selectedDevice.mqtt_topic}</code></p>
   </div>
 )}
-
+             <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl text-sm space-y-1">
             <h3>Note!!!</h3>
             <p><strong>Review Your Code</strong> Before Uploading To Your IoT Device.</p>
             <p><strong>Use Suggested IDE Platform IDE / Arduino IDE</strong> To Upload The Code To IoT Device.</p>
             <p>Also, <strong>Make Sure You Have The Correct Board And Port Selected</strong></p>
-
-            
-            
-            <button onClick={() => fetchOperationalData(true)}>View Live Operational Data</button>
+            </div>
+            <div className="flex flex-wrap gap-3">
+            <button
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+            onClick={() => fetchOperationalData(true)}>Live Data</button>
             <br/>
-            <button style = {{marginTop:'5px'}} onClick={() => setDataBaseMode(true)}>View Collected Data</button>
+            <button
+            className="bg-gray-800 text-white px-4 py-2 rounded-lg"
+            onClick={() => setDataBaseMode(true)}>View Collected Data</button>
             <br/>
-            <button style={{backgroundColor:"red", padding:'2px', borderRadius:'5px' , marginTop:'5px'}} onClick={() => handleDeviceDeletion(selectedDevice.device_id)}><Trash2 size={18}/> Delete Device</button>
+            <button
+            className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            onClick={() => handleDeviceDeletion(selectedDevice.device_id)}
+            >
+              <Trash2 size={16}/>
+              Delete
+              </button>
+          </div>
           </div>
         ) : (
           <p>Select a device to view details</p>
@@ -360,8 +374,8 @@ const Devices = () => {
       </div>
 
       {dataBaseMode && (
-  <div className="databasemode">
-    <h2>Collected Data</h2>
+  <div className="bg-white rounded-2xl p-6 space-y-4 shadow-sm">
+    <h2 className="text-xl font-semibold">Collected Data</h2>
     
     {mongodbData.length > 0 ? (
       <>
@@ -376,7 +390,6 @@ const Devices = () => {
           </LineChart>
         </ResponsiveContainer>
 
-        {/* Limited Data List */}
         <div className="dataList">
           {mongodbData.slice(-10).map((data, index) => (
             <div key={index} className="dataRow">
@@ -392,12 +405,12 @@ const Devices = () => {
   </div>
 )}
    
-      <div className="operationData">
-        <h3>Operational Data</h3>
+      <div className="bg-white rounded-2xl p-6 space-y-4 shadow-sm">
+        <h3 className="text-xl font-semibold">Operational Data</h3>
         {operationData.length > 0 ? (
-          <div className="dataContainer">
+          <div className="space-y-2 text-sm">
             {operationData.map((data, index) => (
-              <div key={index} className="dataRow">
+              <div key={index} className="bg-gray-100 p-2 rounded-lg">
                 <p>{selectedDevice? selectedDevice.unit_name:""}:{data.message}</p>
               </div>
             ))}

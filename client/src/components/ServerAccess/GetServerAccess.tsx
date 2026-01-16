@@ -1,7 +1,6 @@
 "use client";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import './GetServerAccess.css';
 import { useWork } from "../Context/Work.Context";
 import { getCreds } from "@/types/mqttcreds.types";
 import { useAuth } from "../Context/Auth.Context";
@@ -98,7 +97,7 @@ const GetServerAccess = () => {
     };
 
     return (
-        <main className="server-access-container">
+        <main className="bg-[#f0f4f8]">
             <section className="info-section">
                 <h2>🔗 Get Server Access & Connect Your Device</h2>
                 <p>
